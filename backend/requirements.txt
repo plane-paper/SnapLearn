@@ -1,2 +1,10 @@
 networkx
 typing
+google-generativeai
+numpy
+dotenv
+flask
+pypdf
+re
+spacy
+fitz
