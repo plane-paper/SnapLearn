@@ -28,3 +28,5 @@ def update_time(graph, name, success, good_multiplier: Optional[float] = 0.8, ba
 For textbooks, all we need to do is look for the TOC and parse to generate topic list
 Then, from topic list, we can generate the DAG
 '''
+
+'''Filler'''
