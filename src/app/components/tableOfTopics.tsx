@@ -1,5 +1,10 @@
-import { Box, Flex, Grid, Table, Text } from '@mantine/core';
+import { Box, Button, Center, Flex, Grid, Table, Text } from '@mantine/core';
 import { formatTime } from '../../lib/helpers';
+
+interface TableOfTopicsProps  {
+  topicJson: TopicJson
+  setNewCourseStep: React.Dispatch<React.SetStateAction<0|1|2|3>>
+}
 
 function processTableOfContents(topicJson: TopicJson): TableOfContentsItem[] {
   return topicJson.topics.entries.map((entry, index) => ({
@@ -20,12 +25,19 @@ function getTotalReadingTime(topicJson: TopicJson): string {
   return formatTime(totalMinutes);
 }
 
-export default function TableOfTopics({ topicJson }: { topicJson: TopicJson }) {
-  const toc = processTableOfContents(topicJson);
-  const totalTime = getTotalReadingTime(topicJson);
+export default function TableOfTopics(props: TableOfTopicsProps) {
+  const toc = processTableOfContents(props.topicJson);
+  const totalTime = getTotalReadingTime(props.topicJson);
 
   return (
-    <Grid>
+    <Center
+      style={{
+        width: 'fit-content',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 20,
+      }}
+    >
       <Table striped highlightOnHover>
         <Table.Thead>
           <Table.Tr>
@@ -49,6 +61,9 @@ export default function TableOfTopics({ topicJson }: { topicJson: TopicJson }) {
       <Text mt="md" fw={500}>
         Total Reading Time: {totalTime}
       </Text>
-    </Grid>
+      <Button variant={'light'} c={'blue'} onClick={()=>props.setNewCourseStep(0) }>
+        Back
+      </Button>
+    </Center>
   );
 }
