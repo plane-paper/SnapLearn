@@ -104,7 +104,40 @@ def plan_lessons():
             error_line = "No traceback available"
         return jsonify({"error": str(e), "error_line": error_line}), 500
     
-
-
+@app.route("/generate", methods=["POST"])
+def generate_lessons():
+    """
+    Expect JSON body with 'filename' key containing PDF filename
+    And a list of lessons with topics and times
+    Example:
+    {
+        "filename": "mybook.pdf",
+        "lesson_list": [
+            [
+            {
+                "time": 20,
+                "title": "Chapter 1: Europe in 1914 (Part 1)"
+            }
+            ],
+            [
+            {
+                "time": 20,
+                "title": "Chapter 1: Europe in 1914 (Part 2)"
+            }
+            ]
+        ]
+    }
+    """
+    try:
+        data = request.get_json()
+    except Exception as e:
+        import traceback
+        tb = traceback.extract_tb(e.__traceback__)
+        if tb:
+            last_trace = tb[-1]
+            error_line = f"{last_trace.filename}, line {last_trace.lineno}: {last_trace.line}"
+        else:
+            error_line = "No traceback available"
+        return jsonify({"error": str(e), "error_line": error_line}), 500
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8000)
