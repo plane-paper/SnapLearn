@@ -233,7 +233,9 @@ def get_learning_path(graph: nx.DiGraph, completed_only: bool = False) -> List[s
         extra = path_set - all_nodes
 
         # Add any missing nodes at the end (shouldn't happen unless graph is disconnected)
-        learning_path += list(missing)
+        # Sort missing nodes by their 'time' attribute (least to most time consuming)
+        missing_sorted = sorted(list(missing), key=lambda n: graph.nodes[n].get('time', 0))
+        learning_path += missing_sorted
 
         # Remove any extras (shouldn't happen)
         learning_path = [n for n in learning_path if n in all_nodes]
@@ -308,11 +310,12 @@ def suggest_next_topics(graph: nx.DiGraph, n: int = 3) -> List[str]:
     
     return [topic for topic, _, _ in available_topics[:n]]
 
-def create_graph(G: nx.DiGraph, topics: List[Tuple[str, int, int]]):
+def create_graph(topics: List[Tuple[str, int, Optional[int]]]) -> nx.DiGraph:
     # Add all topics
+    G = nx.DiGraph()
     print("Adding topics to graph...")
-    for name, time_val, difficulty in topics:
-        G.add_node(name, time=time_val, difficulty=difficulty, completed=False)
+    for name, time_val in topics:
+        G.add_node(name, time=time_val, completed=False)
     
     # Auto-detect prerequisites using Gemini
     topic_names = [name for name, _, _ in topics]
@@ -402,7 +405,6 @@ def visualize(inp: nx.DiGraph | List):
 
 if __name__ == "__main__":
     # Create graph and add topics
-    G = nx.DiGraph()
     
     topics = [
         ("Database Design", 20, 6),
@@ -420,7 +422,7 @@ if __name__ == "__main__":
         ("Functions", 10, 4),
     ]
 
-    G = create_graph(G, topics)
+    G = create_graph(topics)
 
     # Get learning path
     print("\n" + "="*60)
