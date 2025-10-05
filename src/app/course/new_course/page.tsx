@@ -98,6 +98,7 @@ export default function Home() {
   const [sideBarStatus, setSideBarStatus] = useState<boolean>(false);
   const [isFileProcessed, setIsFileProcessed] = useState<boolean>(false);
   const [newCourseStep, setNewCourseStep] = useState<0 | 1 | 2 | 3>(0);
+  const [lessonTime, setLessonTime] = useState<number>(0);
 
   const [file, setFile] = useState<File | null>(null);
 
@@ -263,7 +264,12 @@ export default function Home() {
           </Center>
         )}
         {newCourseStep == 1 && (
-          <TableOfTopics topicJson={topicJson} setNewCourseStep={setNewCourseStep} />
+          <TableOfTopics
+            topicJson={topicJson}
+            setNewCourseStep={setNewCourseStep}
+            leasonTime={lessonTime}
+            setLessonTime={setLessonTime}
+          />
         )}
       </Center>
     </Box>
