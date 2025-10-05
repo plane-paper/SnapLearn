@@ -314,7 +314,7 @@ def create_graph(topics: List[Tuple[str, int, Optional[int]]]) -> nx.DiGraph:
     # Add all topics
     G = nx.DiGraph()
     print("Adding topics to graph...")
-    for name, time_val in topics:
+    for name, time_val, difficulty in topics:
         G.add_node(name, time=time_val, completed=False)
     
     # Auto-detect prerequisites using Gemini

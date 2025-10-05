@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from read_file import extract_toc
 from priority import create_graph, get_learning_path
+from make_lesson import make_lesson_list_from_topics
 
 app = Flask(__name__)
 
@@ -33,7 +34,14 @@ def upload_file():
         }), 200
         
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import traceback
+        tb = traceback.extract_tb(e.__traceback__)
+        if tb:
+            last_trace = tb[-1]
+            error_line = f"{last_trace.filename}, line {last_trace.lineno}: {last_trace.line}"
+        else:
+            error_line = "No traceback available"
+        return jsonify({"error": str(e), "error_line": error_line}), 500
 
 @app.route("/plan", methods=["POST"])
 def plan_lessons():
@@ -48,18 +56,49 @@ def plan_lessons():
         "minutes_per_lesson": 30
     }
     """
-    data = request.get_json()
-    if not data or 'topics' not in data or 'minutes_per_lesson' not in data:
-        return "Invalid input", 400
-    topics = []
-    for topic in data.topics:
-        topics.append((topic['title'], topic['time'], None))  # Difficulty is None for now
-    G = create_graph(topics)
-    path = get_learning_path(G, False)
+    try:
+        data = request.get_json()
+        if not data or 'topics' not in data or 'minutes_per_lesson' not in data:
+            return "Invalid input", 400
+        print("Received planning request:", data)
+        topics = []
+        for topic in data['topics']:
+            topics.append((topic['title'], topic['time'], None))  # Difficulty is None for now
+        print("Creating graph...")
+        G = create_graph(topics)
+        print("Graph created")
+        path = get_learning_path(G, False)
+        print("Learning path determined:", path)
 
-    minutes_per_lesson = data['minutes_per_lesson']
-    
+        ordered_topics = []
+        for name in path:
+            topic_data = next((t for t in data['topics'] if t['title'] == name), None)
+            if topic_data:
+                topic_dict = {
+                    "title": name,
+                    "time": topic_data['time']
+                }
+                if 2 * data['minutes_per_lesson'] < topic_data['time']:
+                    topic_dict["too_much"] = True
+                else:
+                    topic_dict["too_much"] = False
+                ordered_topics.append(topic_dict)
+        print("Ordered topics:", ordered_topics)
+        
+        lessons = make_lesson_list_from_topics(ordered_topics, data['minutes_per_lesson'])
 
+        return jsonify({
+            "lesson_list": lessons
+        }), 200
+    except Exception as e:
+        import traceback
+        tb = traceback.extract_tb(e.__traceback__)
+        if tb:
+            last_trace = tb[-1]
+            error_line = f"{last_trace.filename}, line {last_trace.lineno}: {last_trace.line}"
+        else:
+            error_line = "No traceback available"
+        return jsonify({"error": str(e), "error_line": error_line}), 500
     
     
 
