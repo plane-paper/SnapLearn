@@ -44,7 +44,7 @@ export default function FinishPage(props: Props) {
       if (!response.ok) throw new Error('Failed to generate');
 
       const data = await response.json();
-      
+
       const course = {
         id: Date.now().toString(), // Temporary ID
         textbook_name: props.file.name,
@@ -56,7 +56,6 @@ export default function FinishPage(props: Props) {
       setGeneratedCourse(course);
       props.onCourseGenerated(course); // Pass to parent
       setGenerating(false);
-
     } catch (error) {
       console.error('Generation error:', error);
       setGenerating(false);
@@ -121,86 +120,100 @@ export default function FinishPage(props: Props) {
         }}
       >
         <Stack align="center" gap="xl">
-        {generating ? (
-          <>
-            <Loader size={80} />
-            <Title>Generating Your Course...</Title>
-          </>
-        ) : (<>
-          {/* Success Icon */}
-          <ThemeIcon
-            size={120}
-            radius="xl"
-            variant="light"
-            color="green"
-            style={{
-              animation: 'bounce 1s ease-in-out',
-            }}
-          >
-            <IconCheck size={60} stroke={3} />
-          </ThemeIcon>
+          {generating ? (
+            <>
+              <Loader size={80} />
+              <Title>Generating Your Course...</Title>
+            </>
+          ) : (
+            <>
+              {/* Success Icon */}
+              <ThemeIcon
+                size={120}
+                radius="xl"
+                variant="light"
+                color="green"
+                style={{
+                  animation: 'bounce 1s ease-in-out',
+                }}
+              >
+                <IconCheck size={60} stroke={3} />
+              </ThemeIcon>
 
-          {/* Title */}
-          <Box>
-            <Title order={1} size="h1" fw={700} mb="xs">
-              Setup Complete! 🎉
-            </Title>
-            <Text size="lg" c="dimmed">
-              Your course is ready to go
-            </Text>
-          </Box>
+              {/* Title */}
+              <Box>
+                <Title order={1} size="h1" fw={700} mb="xs">
+                  Setup Complete! 🎉
+                </Title>
+                <Text size="lg" c="dimmed">
+                  Your course is ready to go
+                </Text>
+              </Box>
 
-          {/* Features/Benefits */}
-          <Stack gap="sm" align="stretch" w="100%">
-            <Group gap="sm">
-              <IconSparkles size={20} color="var(--mantine-color-violet-6)" />
-              <Text size="sm">AI-powered learning path created</Text>
-            </Group>
-            <Group gap="sm">
-              <IconSparkles size={20} color="var(--mantine-color-violet-6)" />
-              <Text size="sm">Practice sessions scheduled</Text>
-            </Group>
-            <Group gap="sm">
-              <IconSparkles size={20} color="var(--mantine-color-violet-6)" />
-              <Text size="sm">Progress tracking enabled</Text>
-            </Group>
-          </Stack>
+              {/* Features/Benefits */}
+              <Stack gap="sm" align="stretch" w="100%">
+                <Group gap="sm">
+                  <IconSparkles
+                    size={20}
+                    color="var(--mantine-color-violet-6)"
+                  />
+                  <Text size="sm">AI-powered learning path created</Text>
+                </Group>
+                <Group gap="sm">
+                  <IconSparkles
+                    size={20}
+                    color="var(--mantine-color-violet-6)"
+                  />
+                  <Text size="sm">Practice sessions scheduled</Text>
+                </Group>
+                <Group gap="sm">
+                  <IconSparkles
+                    size={20}
+                    color="var(--mantine-color-violet-6)"
+                  />
+                  <Text size="sm">Progress tracking enabled</Text>
+                </Group>
+              </Stack>
 
-          {/* CTA Button */}
-          <Button
-            size="xl"
-            fullWidth
-            onClick={handleGoToCourses}
-            rightSection={<IconArrowRight size={20} />}
-            style={{
-              background: getGradient(
-                { deg: 137, from: 'blue', to: 'cyan.7' },
-                theme
-              ),
-            }}
-          >
-            Go to My Courses
-          </Button>
+              {/* CTA Button */}
+              <Button
+                size="xl"
+                fullWidth
+                onClick={() => {
+                  handleStart();
+                  handleGoToCourses;
+                }}
+                rightSection={<IconArrowRight size={20} />}
+                style={{
+                  background: getGradient(
+                    { deg: 137, from: 'blue', to: 'cyan.7' },
+                    theme
+                  ),
+                }}
+              >
+                Go to My Courses
+              </Button>
 
-          {/* Auto redirect notice */}
-          {autoRedirect && countdown > 0 && (
-            <Text size="sm" c="dimmed">
-              Redirecting automatically in {countdown} seconds...
-            </Text>
+              {/* Auto redirect notice */}
+              {autoRedirect && countdown > 0 && (
+                <Text size="sm" c="dimmed">
+                  Redirecting automatically in {countdown} seconds...
+                </Text>
+              )}
+
+              {/* Cancel auto redirect */}
+              {autoRedirect && countdown > 0 && (
+                <Button
+                  variant="subtle"
+                  size="sm"
+                  c="dimmed"
+                  onClick={() => setAutoRedirect(false)}
+                >
+                  Cancel auto-redirect
+                </Button>
+              )}
+            </>
           )}
-
-          {/* Cancel auto redirect */}
-          {autoRedirect && countdown > 0 && (
-            <Button
-              variant="subtle"
-              size="sm"
-              c="dimmed"
-              onClick={() => setAutoRedirect(false)}
-            >
-              Cancel auto-redirect
-            </Button>
-          )}
-          </>)}
         </Stack>
 
         <style>{`
