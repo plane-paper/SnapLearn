@@ -7,6 +7,7 @@ import google.generativeai as genai
 import json
 import os
 import dotenv
+from utils import assign_time, remove_trailing_chapters
 
 dotenv.load_dotenv()
 
@@ -73,16 +74,18 @@ IMPORTANT RULES:
   * "Introduction .... 1"
 - Include chapter titles, section titles, and major headings
 - Assign levels: 1=chapters, 2=sections, 3=subsections
+- At the end, based on the topic of the book, provide a best guess of the number of minutes it would take to learn one page of the book.
 
 Return ONLY a JSON object with this exact structure (no markdown, no extra text):
 {{
   "table_of_contents": [
     {{"title": "Chapter 1: Introduction", "page": 1, "level": 1}},
     {{"title": "Section 1.1: Overview", "page": 3, "level": 2}}
-  ]
+  ],
+  "minutes_per_page": 2
 }}
 
-If no clear table of contents exists, return: {{"table_of_contents": []}}
+If no clear table of contents exists, return: {{"table_of_contents": [], minutes_per_page: None}}
 
 Text from first {max_pages} pages:
 {toc_text[:8000]}"""
@@ -99,9 +102,12 @@ Text from first {max_pages} pages:
         
         result = json.loads(response_text)
         entries = result.get('table_of_contents', [])
+        time_per_page = result.get('minutes_per_page', 2)
         
+        remove_trailing_chapters(entries)
+        assign_time(entries, minutes_per_page=time_per_page)
+
         return {
-            'method': 'gemini',
             'entries': entries,
             'total_entries': len(entries)
         }
