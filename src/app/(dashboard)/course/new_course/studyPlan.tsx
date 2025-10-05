@@ -16,6 +16,7 @@ import { IconBook, IconClock, IconCheckbox, IconCalendar, IconArrowLeft, IconArr
 
 interface Props {
   setNewCourseStep: React.Dispatch<React.SetStateAction<0 | 1 | 2 | 3>>;
+  lessonPlan: LessonPlan;
 }
 
 // Helper Functions
@@ -60,59 +61,7 @@ function getTotalStats(lessonPlan: LessonPlan) {
 
 // Main Component
 export default function StudyPlan(props: Props) {
-  const lessonPlan: LessonPlan = {
-    lesson_list: [
-      [{ time: 20, title: 'Chapter 1: Europe in 1914 (Part 1)' }],
-      [{ time: 20, title: 'Chapter 1: Europe in 1914 (Part 2)' }],
-      [
-        { time: 2, title: 'Chapter 1: Europe in 1914 (Part 3)' },
-        { time: 18, title: 'Practice' },
-      ],
-      [
-        { time: 20, title: 'Chapter 2: The Coming of War (Shortened)' },
-        { time: 0, title: 'Practice' },
-      ],
-      [
-        {
-          time: 20,
-          title: 'Chapter 3: 1914: The Opening Campaigns (Shortened)',
-        },
-        { time: 0, title: 'Practice' },
-      ],
-      [{ time: 20, title: 'Chapter 4: 1915: The War Continues (Part 1)' }],
-      [{ time: 20, title: 'Chapter 4: 1915: The War Continues (Part 2)' }],
-      [
-        { time: 17, title: 'Chapter 4: 1915: The War Continues (Part 3)' },
-        { time: 3, title: 'Practice' },
-      ],
-      [
-        {
-          time: 20,
-          title: 'Chapter 5: 1916: The War of Attrition (Shortened)',
-        },
-        { time: 0, title: 'Practice' },
-      ],
-      [
-        {
-          time: 20,
-          title: 'Chapter 6: The United States Enters the War (Shortened)',
-        },
-        { time: 0, title: 'Practice' },
-      ],
-      [{ time: 20, title: 'Chapter 7: 1917: The Year of Crisis (Part 1)' }],
-      [{ time: 20, title: 'Chapter 7: 1917: The Year of Crisis (Part 2)' }],
-      [
-        { time: 2, title: 'Chapter 7: 1917: The Year of Crisis (Part 3)' },
-        { time: 18, title: 'Chapter 8: 1918: The Year of Decision (Part 1)' },
-      ],
-      [{ time: 20, title: 'Chapter 8: 1918: The Year of Decision (Part 2)' }],
-      [
-        { time: 16, title: 'Chapter 8: 1918: The Year of Decision (Part 3)' },
-        { time: 4, title: 'Practice' },
-      ],
-      [{ time: 20, title: 'Chapter 9: The Settlement (Shortened)' }],
-    ],
-  };
+  const lessonPlan: LessonPlan = props.lessonPlan
 
   const sessions = processLessonPlan(lessonPlan);
   const stats = getTotalStats(lessonPlan);

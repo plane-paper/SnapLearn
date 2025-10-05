@@ -111,6 +111,7 @@ export default function NewCourse() {
   const [error, setError] = useState<string | null>(null);
   const [topicData, setTopicData] = useState(null);
   const [file, setFile] = useState<File | null>(null);
+  const [lessonPlan, setLessonPlan] = useState<LessonPlan>({lesson_list:[]});
 
   const handleUpload = async () => {
     if (!file) return;
@@ -271,6 +272,7 @@ export default function NewCourse() {
             setNewCourseStep={setNewCourseStep}
             leasonTime={lessonTime}
             setLessonTime={setLessonTime}
+            setLessonPlan={setLessonPlan}
           />
         </Box>
       )}
@@ -284,7 +286,7 @@ export default function NewCourse() {
           }}
           h={'fit-content'}
         >
-          <StudyPlan setNewCourseStep={setNewCourseStep} />
+          <StudyPlan setNewCourseStep={setNewCourseStep} lessonPlan={lessonPlan as LessonPlan}/>
         </Box>
       )}
       {newCourseStep == 3 && <FinishPage />}

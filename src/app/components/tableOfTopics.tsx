@@ -6,6 +6,7 @@ import {
   Flex,
   Grid,
   Group,
+  Loader,
   NumberInput,
   Paper,
   Slider,
@@ -28,6 +29,7 @@ interface TableOfTopicsProps {
   setNewCourseStep: React.Dispatch<React.SetStateAction<0 | 1 | 2 | 3>>;
   leasonTime: number;
   setLessonTime: React.Dispatch<React.SetStateAction<number>>;
+  setLessonPlan: React.Dispatch<React.SetStateAction<LessonPlan>>;
 }
 
 function processTableOfContents(topicJson: TopicJson): TableOfContentsItem[] {
@@ -58,6 +60,59 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
   const totalTime = getTotalReadingTime(props.topicJson);
   const [hour, setHour] = useState<number>(0);
   const [minute, setMinute] = useState<number>(0);
+
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // In your TableOfTopics component or wherever you handle the "Next" button
+
+  const handleCreatePlan = async (hour: number, minute: number) => {
+    const totalMinutes = hour * 60 + minute;
+
+    if (totalMinutes === 0) {
+      setError('Please set a valid study time');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Transform your topicJson to match Flask's expected format
+      const topics = props.topicJson.topics.entries.map((entry: any) => ({
+        title: entry.title,
+        time: entry.time,
+      }));
+
+      const response = await fetch('/api/create-plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          topics,
+          minutes_per_lesson: totalMinutes,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create plan');
+      }
+
+      const data = await response.json();
+      console.log('Lesson plan:', data.lesson_list);
+
+      // Pass the lesson plan to the next step
+      props.setLessonPlan(data.lesson_list); // You'll need to add this prop
+      props.setNewCourseStep(2);
+    } catch (err) {
+      console.error('Plan creation error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to create plan');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box style={{ maxWidth: 900, width: '70%' }}>
@@ -220,7 +275,8 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
                 style={{ background: 'var(--mantine-color-blue-0)' }}
               >
                 <Text size="sm" ta="center" fw={500} c="blue">
-                {"You'll study for"} {hour > 0 && `${hour}h `}{minute > 0 && `${minute}min`} per day
+                  {"You'll study for"} {hour > 0 && `${hour}h `}
+                  {minute > 0 && `${minute}min`} per day
                 </Text>
               </Paper>
             )}
@@ -241,14 +297,11 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
           <Button
             size="lg"
             flex={1}
-            onClick={() => {
-              calculateTime(hour, minute);
-              props.setNewCourseStep(2);
-            }}
+            onClick={() => handleCreatePlan(hour, minute)}
             rightSection={<IconArrowRight size={18} />}
-            disabled={hour === 0 && minute === 0}
+            disabled={(hour === 0 && minute === 0) || loading}
           >
-            Continue
+            {loading ? <Loader size="sm" /> : 'Continue'}
           </Button>
         </Group>
       </Stack>
