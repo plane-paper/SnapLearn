@@ -24,7 +24,7 @@ export default function FinishPage(props: Props) {
   const router = useRouter();
   const theme = useMantineTheme();
   const [countdown, setCountdown] = useState(5);
-  const [autoRedirect, setAutoRedirect] = useState(true);
+  const [autoRedirect, setAutoRedirect] = useState(false);
   const [generating, setGenerating] = useState(true);
   const [courseId, setCourseId] = useState<string | null>(null);
   const [generatedCourse, setGeneratedCourse] = useState<any>(null);
