@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from read_file import extract_toc
 from priority import create_graph, get_learning_path
 from make_lesson import make_lesson_list_from_topics
+from utils import save_pdf_to_db, get_pdf_from_db
 
 app = Flask(__name__)
 
@@ -29,6 +30,9 @@ def upload_file():
         print("File processed successfully")
         print(toc)  # Just print the whole thing, don't slice
         
+        save_pdf_to_db(file.filename, pdf_bytes)
+        print("Saved PDF to database")
+
         return jsonify({
             "topics": toc
         }), 200
@@ -100,7 +104,7 @@ def plan_lessons():
             error_line = "No traceback available"
         return jsonify({"error": str(e), "error_line": error_line}), 500
     
-    
+
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8000)
