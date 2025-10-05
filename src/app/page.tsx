@@ -1,4 +1,5 @@
 import { Button, Center, Text, Title } from "@mantine/core";
+import Image from "next/image";
 
 export default function HomePage() {
   return (
@@ -11,9 +12,13 @@ export default function HomePage() {
     }}
         p={6}>
 
-        <img
+        <Image
             src="/welcomebg.png"
             alt="background"
+            width={2020}
+            height={1022}
+            quality={100} 
+            priority 
             style={{
                 minWidth: "721px",
                 width: '75%',

@@ -28,9 +28,9 @@ import {
   IconLayoutSidebarLeftExpand,
   IconUpload,
 } from '@tabler/icons-react';
-import TableOfTopics from '../../components/tableOfTopics';
+import TableOfTopics from '../../../components/tableOfTopics';
 import StudyPlan from './studyPlan';
-import FinishPage from '../finishPage';
+import FinishPage from './finishPage';
 
 const navList = [
   {
@@ -109,9 +109,16 @@ export default function Home() {
   const [file, setFile] = useState<File | null>(null);
 
   return (
-    <Box style={{ display: 'flex', height: '100vh', background: '#f8f9fa',minHeight: 'fit-content' }}>
+    <Box
+      style={{
+        display: 'flex',
+        height: '100vh',
+        background: '#f8f9fa',
+        minHeight: 'fit-content',
+      }}
+    >
       {/* Sidebar Toggle */}
-      <ActionIcon
+      {/* <ActionIcon
         onClick={() => setSideBarStatus((o) => !o)}
         size="xl"
         variant="subtle"
@@ -123,10 +130,10 @@ export default function Home() {
         }}
       >
         <IconLayoutSidebarLeftExpand size={28} />
-      </ActionIcon>
+      </ActionIcon> */}
 
       {/* Sidebar Drawer */}
-      <Drawer
+      {/* <Drawer
         opened={sideBarStatus}
         onClose={() => setSideBarStatus(false)}
         withCloseButton={false}
@@ -146,7 +153,7 @@ export default function Home() {
           root: { zIndex: 1 },
         }}
       >
-        {/* User Info */}
+        
         <Box>
           {isLoading && <Text>Loading...</Text>}
           {user && (
@@ -169,7 +176,7 @@ export default function Home() {
 
           <Divider my="md" />
 
-          {/* Navigation */}
+          
           <Box>
             {navList.map((item, key) => (
               <NavLink
@@ -189,7 +196,6 @@ export default function Home() {
           </Box>
         </Box>
 
-        {/* Log Out Button */}
         <Button
           component="a"
           href="/auth/logout?returnTo=http://localhost:3000"
@@ -199,7 +205,7 @@ export default function Home() {
         >
           Log Out
         </Button>
-      </Drawer>
+      </Drawer> */}
 
       {/* Main Content */}
       {newCourseStep == 0 && (

@@ -16,7 +16,12 @@ import {
 } from '@mantine/core';
 import { formatTime } from '../../lib/helpers';
 import { useState } from 'react';
-import { IconArrowLeft, IconArrowRight, IconBook, IconClock } from '@tabler/icons-react';
+import {
+  IconArrowLeft,
+  IconArrowRight,
+  IconBook,
+  IconClock,
+} from '@tabler/icons-react';
 
 interface TableOfTopicsProps {
   topicJson: TopicJson;
@@ -59,16 +64,23 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
       <Stack gap="xl">
         {/* Header */}
         <Box>
-          <Title order={2} mb="xs">Table of Contents</Title>
+          <Title order={2} mb="xs">
+            Table of Contents
+          </Title>
           <Text size="sm" c="dimmed">
             Review your course structure and set your daily learning time
           </Text>
         </Box>
 
         {/* Table Card */}
-        <Paper shadow="sm" radius="md" withBorder  style={{overflow:'hidden'}}>
-          <Table 
-            striped 
+        <Paper
+          shadow="sm"
+          radius="md"
+          withBorder
+          style={{ overflow: 'hidden' }}
+        >
+          <Table
+            striped
             highlightOnHover
             styles={{
               th: {
@@ -79,7 +91,7 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
               },
               td: {
                 padding: '12px 16px',
-              }
+              },
             }}
             bdrs={'md'}
           >
@@ -125,17 +137,19 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
           </Table>
 
           {/* Total Time Footer */}
-          <Box 
-            p="md" 
-            style={{ 
+          <Box
+            p="md"
+            style={{
               background: 'var(--mantine-color-blue-0)',
-              borderTop: '1px solid var(--mantine-color-gray-3)'
+              borderTop: '1px solid var(--mantine-color-gray-3)',
             }}
           >
             <Group justify="space-between">
               <Group gap="xs">
                 <IconBook size={20} />
-                <Text fw={600} size="sm">Total Reading Time</Text>
+                <Text fw={600} size="sm">
+                  Total Reading Time
+                </Text>
               </Group>
               <Badge size="lg" variant="filled">
                 {totalTime}
@@ -149,8 +163,13 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
           <Stack gap="lg">
             <Box>
               <Group gap="xs" mb="xs">
-                <IconClock size={20} style={{ color: 'var(--mantine-color-blue-6)' }} />
-                <Title order={4} fw={600}>Daily Learning Time</Title>
+                <IconClock
+                  size={20}
+                  style={{ color: 'var(--mantine-color-blue-6)' }}
+                />
+                <Title order={4} fw={600}>
+                  Daily Learning Time
+                </Title>
               </Group>
               <Text size="sm" c="dimmed">
                 Set how much time you want to dedicate each day
@@ -172,7 +191,7 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
                     textAlign: 'center',
                     fontSize: '18px',
                     fontWeight: 600,
-                  }
+                  },
                 }}
               />
               <NumberInput
@@ -189,15 +208,19 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
                     textAlign: 'center',
                     fontSize: '18px',
                     fontWeight: 600,
-                  }
+                  },
                 }}
               />
             </Flex>
 
             {(hour > 0 || minute > 0) && (
-              <Paper p="sm" radius="md" style={{ background: 'var(--mantine-color-blue-0)' }}>
+              <Paper
+                p="sm"
+                radius="md"
+                style={{ background: 'var(--mantine-color-blue-0)' }}
+              >
                 <Text size="sm" ta="center" fw={500} c="blue">
-                  You'll study for {hour > 0 && `${hour}h `}{minute > 0 && `${minute}min`} per day
+                {"You'll study for"} {hour > 0 && `${hour}h `}{minute > 0 && `${minute}min`} per day
                 </Text>
               </Paper>
             )}
