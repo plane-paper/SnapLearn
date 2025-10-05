@@ -115,8 +115,7 @@ def generate_lessons():
     
     return jsonify({
         "lessons": DEMO_LESSONS,
-        "total_lessons": len(DEMO_LESSONS),
-        "completed": 0
+        "total_lessons": len(DEMO_LESSONS)
     }), 200
     # try:
     #     data = request.get_json()
