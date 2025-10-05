@@ -1,4 +1,5 @@
 export function formatTime(minutes: number): string {
+    if (minutes === 0) return "0 min";
     if (minutes < 60) {
       return `${minutes} min`;
     }
@@ -8,4 +9,5 @@ export function formatTime(minutes: number): string {
       ? `${hours}h ${remainingMinutes}m` 
       : `${hours}h`;
   }
+  
   
