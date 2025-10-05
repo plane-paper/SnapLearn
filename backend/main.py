@@ -1,8 +1,11 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
+import json
 from read_file import extract_toc
 from priority import create_graph, get_learning_path
 from make_lesson import make_lesson_list_from_topics
 from utils import save_pdf_to_db, get_pdf_from_db
+from fast_generate import generate_lesson_content
+from final_generate import DEMO_LESSONS
 
 app = Flask(__name__)
 
@@ -103,41 +106,58 @@ def plan_lessons():
         else:
             error_line = "No traceback available"
         return jsonify({"error": str(e), "error_line": error_line}), 500
-    
+
 @app.route("/generate", methods=["POST"])
 def generate_lessons():
     """
-    Expect JSON body with 'filename' key containing PDF filename
-    And a list of lessons with topics and times
-    Example:
-    {
-        "filename": "mybook.pdf",
-        "lesson_list": [
-            [
-            {
-                "time": 20,
-                "title": "Chapter 1: Europe in 1914 (Part 1)"
-            }
-            ],
-            [
-            {
-                "time": 20,
-                "title": "Chapter 1: Europe in 1914 (Part 2)"
-            }
-            ]
-        ]
-    }
+    Streams lessons as they're generated
     """
-    try:
-        data = request.get_json()
-    except Exception as e:
-        import traceback
-        tb = traceback.extract_tb(e.__traceback__)
-        if tb:
-            last_trace = tb[-1]
-            error_line = f"{last_trace.filename}, line {last_trace.lineno}: {last_trace.line}"
-        else:
-            error_line = "No traceback available"
-        return jsonify({"error": str(e), "error_line": error_line}), 500
+    return jsonify({
+        "lessons:": DEMO_LESSONS,
+        "total_lessons": len(DEMO_LESSONS)
+    }), 200
+    # try:
+    #     data = request.get_json()
+    #     lesson_list = data['lesson_list']
+        
+    #     def generate():
+    #         """Generator function that yields lessons as they're created"""
+    #         print(f"Starting generation for {len(lesson_list)} lessons...")
+            
+    #         for lesson_idx, lesson in enumerate(lesson_list):
+    #             print(f"Processing lesson {lesson_idx + 1}/{len(lesson_list)}...")
+                
+    #             # Import here to avoid circular imports
+    #             from fast_generate import create_gemini_prompt_for_lesson, call_gemini
+                
+    #             # Create prompt and generate content
+    #             prompt = create_gemini_prompt_for_lesson(lesson, lesson_list)
+    #             generated_content = call_gemini(prompt)
+                
+    #             # Create lesson object
+    #             lesson_obj = {
+    #                 "lesson_number": lesson_idx + 1,
+    #                 "topics": lesson,
+    #                 "content": generated_content,
+    #                 "total_time": sum(t["time"] for t in lesson)
+    #             }
+                
+    #             # Yield this lesson as JSON + newline delimiter
+    #             yield json.dumps(lesson_obj) + "\n"
+            
+    #         print("Generation complete!")
+        
+    #     return Response(generate(), mimetype='application/x-ndjson')
+        
+    # except Exception as e:
+    #     import traceback
+    #     tb = traceback.extract_tb(e.__traceback__)
+    #     if tb:
+    #         last_trace = tb[-1]
+    #         error_line = f"{last_trace.filename}, line {last_trace.lineno}: {last_trace.line}"
+    #     else:
+    #         error_line = "No traceback available"
+    #     return jsonify({"error": str(e), "error_line": error_line}), 500
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8000)
