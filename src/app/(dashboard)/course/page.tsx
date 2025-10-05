@@ -80,7 +80,7 @@ export default function CoursesPage() {
             <Button
               size="lg"
               leftSection={<IconPlus size={20} />}
-              onClick={() => router.push('/courses/new_course')}
+              onClick={() => router.push('/course/new_course')}
             >
               Create Your First Course
             </Button>
@@ -110,7 +110,7 @@ export default function CoursesPage() {
               // Warn user they'll lose current course
               if (confirm('Creating a new course will replace your current one. Continue?')) {
                 sessionStorage.removeItem('current_course');
-                router.push('/courses/new_course');
+                router.push('/course/new_course');
               }
             }}
           >
@@ -125,7 +125,7 @@ export default function CoursesPage() {
           radius="md"
           withBorder
           style={{ cursor: 'pointer' }}
-          onClick={() => router.push('/courses/view')}
+          onClick={() => router.push('/course/view')}
         >
           <Group justify="space-between" wrap="nowrap">
             <Group gap="md" style={{ flex: 1 }}>
