@@ -1,17 +1,22 @@
 import {
+  Badge,
   Box,
   Button,
   Center,
   Flex,
   Grid,
+  Group,
   NumberInput,
+  Paper,
   Slider,
+  Stack,
   Table,
   Text,
   Title,
 } from '@mantine/core';
 import { formatTime } from '../../lib/helpers';
 import { useState } from 'react';
+import { IconArrowLeft, IconArrowRight, IconBook, IconClock } from '@tabler/icons-react';
 
 interface TableOfTopicsProps {
   topicJson: TopicJson;
@@ -50,107 +55,180 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
   const [minute, setMinute] = useState<number>(0);
 
   return (
-    <Center
-      style={{
-        width: 'fit-content',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 20,
-      }}
-    >
-      <Table striped highlightOnHover>
-        <Table.Thead>
-          <Table.Tr>
-            <Table.Th>Chapter</Table.Th>
-            <Table.Th>Title</Table.Th>
-            <Table.Th>Page</Table.Th>
-            <Table.Th>Reading Time</Table.Th>
-          </Table.Tr>
-        </Table.Thead>
-        <Table.Tbody>
-          {toc.map((item) => (
-            <Table.Tr key={item.chapter}>
-              <Table.Td>{item.chapter}</Table.Td>
-              <Table.Td>{item.title}</Table.Td>
-              <Table.Td>{item.page}</Table.Td>
-              <Table.Td>{item.readingTime}</Table.Td>
-            </Table.Tr>
-          ))}
-        </Table.Tbody>
-      </Table>
-      <Text mt="md" fw={500}>
-        Total Reading Time: {totalTime}
-      </Text>
-      <Box
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          gap: 12,
-          margin: '12px 0px',
-        }}
-        bd="2px solid var(--mantine-color-blue-6)"
-        bdrs="var(--mantine-radius-md)"
-        p="md"
-      >
-        {/* <Flex justify={'space-between'}> */}
-        <Title order={6}>Set your desired time for each lesson: </Title>
-        {/* <Title order={4}>{props.leasonTime} min</Title> */}
-        {/* </Flex> */}
+    <Box style={{ maxWidth: 900, width: '70%' }}>
+      <Stack gap="xl">
+        {/* Header */}
+        <Box>
+          <Title order={2} mb="xs">Table of Contents</Title>
+          <Text size="sm" c="dimmed">
+            Review your course structure and set your daily learning time
+          </Text>
+        </Box>
 
-        {/* <Slider
-          color="blue"
-          size="sm"
-          value={props.leasonTime}
-          domain={[0, 180]}
-          max={180}
-          marks={[
-            { value: 60, label: '60 min' },
-            { value: 120, label: '120 min' },
-          ]}
-          style={{ width: '100%', marginBottom: '16px' }}
-          onChange={(v) => props.setLessonTime(v)}
-        ></Slider> */}
-        <Flex style={{ gap: '16px', width: '100%' }}>
-          <NumberInput
-            label="Hour"
-            placeholder="Hour"
-            max={23}
-            min={0}
-            w={'50%'}
-            value={hour}
-            onChange={(v) => setHour(v as number)}
-          ></NumberInput>
-          <NumberInput
-            label="Minute"
-            placeholder="Minute"
-            max={59}
-            min={0}
-            w={'50%'}
-            value={minute}
-            onChange={(v) => setMinute(v as number)}
-          ></NumberInput>
-        </Flex>
-      </Box>
-      <Flex w={'100%'} gap={'sm'}>
-        <Button
-          variant={'light'}
-          c={'blue'}
-          onClick={() => props.setNewCourseStep(0)}
-          fullWidth
-        >
-          Back
-        </Button>
-        <Button
-          onClick={() => {
-            calculateTime(hour, minute);
-            props.setNewCourseStep(2);
-          }}
-          fullWidth
-        >
-          Next
-        </Button>
-      </Flex>
-    </Center>
+        {/* Table Card */}
+        <Paper shadow="sm" radius="md" withBorder  style={{overflow:'hidden'}}>
+          <Table 
+            striped 
+            highlightOnHover
+            styles={{
+              th: {
+                fontWeight: 600,
+                fontSize: '14px',
+                padding: '16px',
+                background: 'var(--mantine-color-gray-0)',
+              },
+              td: {
+                padding: '12px 16px',
+              }
+            }}
+            bdrs={'md'}
+          >
+            <Table.Thead>
+              <Table.Tr>
+                <Table.Th>Chapter</Table.Th>
+                <Table.Th>Title</Table.Th>
+                <Table.Th>Page</Table.Th>
+                <Table.Th>
+                  <Group gap="xs">
+                    <IconClock size={16} />
+                    <span>Time</span>
+                  </Group>
+                </Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {toc.map((item) => (
+                <Table.Tr key={item.chapter}>
+                  <Table.Td>
+                    <Badge variant="light" size="lg">
+                      {item.chapter}
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text size="sm" fw={500}>
+                      {item.title}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Text size="sm" c="dimmed">
+                      {item.page}
+                    </Text>
+                  </Table.Td>
+                  <Table.Td>
+                    <Badge variant="outline" color="blue">
+                      {item.readingTime}
+                    </Badge>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+
+          {/* Total Time Footer */}
+          <Box 
+            p="md" 
+            style={{ 
+              background: 'var(--mantine-color-blue-0)',
+              borderTop: '1px solid var(--mantine-color-gray-3)'
+            }}
+          >
+            <Group justify="space-between">
+              <Group gap="xs">
+                <IconBook size={20} />
+                <Text fw={600} size="sm">Total Reading Time</Text>
+              </Group>
+              <Badge size="lg" variant="filled">
+                {totalTime}
+              </Badge>
+            </Group>
+          </Box>
+        </Paper>
+
+        {/* Learning Time Card */}
+        <Paper shadow="sm" radius="md" p="lg" withBorder>
+          <Stack gap="lg">
+            <Box>
+              <Group gap="xs" mb="xs">
+                <IconClock size={20} style={{ color: 'var(--mantine-color-blue-6)' }} />
+                <Title order={4} fw={600}>Daily Learning Time</Title>
+              </Group>
+              <Text size="sm" c="dimmed">
+                Set how much time you want to dedicate each day
+              </Text>
+            </Box>
+
+            <Flex gap="md">
+              <NumberInput
+                label="Hours"
+                placeholder="0"
+                max={23}
+                min={0}
+                size="lg"
+                flex={1}
+                value={hour}
+                onChange={(v) => setHour(v as number)}
+                styles={{
+                  input: {
+                    textAlign: 'center',
+                    fontSize: '18px',
+                    fontWeight: 600,
+                  }
+                }}
+              />
+              <NumberInput
+                label="Minutes"
+                placeholder="0"
+                max={59}
+                min={0}
+                size="lg"
+                flex={1}
+                value={minute}
+                onChange={(v) => setMinute(v as number)}
+                styles={{
+                  input: {
+                    textAlign: 'center',
+                    fontSize: '18px',
+                    fontWeight: 600,
+                  }
+                }}
+              />
+            </Flex>
+
+            {(hour > 0 || minute > 0) && (
+              <Paper p="sm" radius="md" style={{ background: 'var(--mantine-color-blue-0)' }}>
+                <Text size="sm" ta="center" fw={500} c="blue">
+                  You'll study for {hour > 0 && `${hour}h `}{minute > 0 && `${minute}min`} per day
+                </Text>
+              </Paper>
+            )}
+          </Stack>
+        </Paper>
+
+        {/* Navigation Buttons */}
+        <Group gap="sm">
+          <Button
+            variant="light"
+            size="lg"
+            flex={1}
+            onClick={() => props.setNewCourseStep(0)}
+            leftSection={<IconArrowLeft size={18} />}
+          >
+            Back
+          </Button>
+          <Button
+            size="lg"
+            flex={1}
+            onClick={() => {
+              calculateTime(hour, minute);
+              props.setNewCourseStep(2);
+            }}
+            rightSection={<IconArrowRight size={18} />}
+            disabled={hour === 0 && minute === 0}
+          >
+            Continue
+          </Button>
+        </Group>
+      </Stack>
+    </Box>
   );
 }

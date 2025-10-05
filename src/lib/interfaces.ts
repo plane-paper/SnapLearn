@@ -19,3 +19,19 @@ interface TopicEntry {
     level: number;
     chapter: number;
   }
+
+interface Lesson {
+  time: number;
+  title: string;
+}
+
+interface LessonPlan {
+  lesson_list: Lesson[][];
+}
+
+interface ProcessedSession {
+  sessionNumber: number;
+  lessons: Lesson[];
+  totalTime: number;
+  hasPractice: boolean;
+}
