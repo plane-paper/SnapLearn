@@ -65,7 +65,10 @@ export default function CoursesPage() {
                 justifyContent: 'center',
               }}
             >
-              <IconBook size={60} style={{ color: 'var(--mantine-color-blue-6)' }} />
+              <IconBook
+                size={60}
+                style={{ color: 'var(--mantine-color-blue-6)' }}
+              />
             </Box>
 
             <Box>
@@ -92,7 +95,9 @@ export default function CoursesPage() {
 
   // Has course - show it
   return (
-    <Box style={{ maxWidth: 1200, width: '100%', margin: '0 auto', padding: 32 }}>
+    <Box
+      style={{ maxWidth: 1200, width: '100%', margin: '0 auto', padding: 32 }}
+    >
       <Stack gap="xl">
         {/* Header */}
         <Group justify="space-between">
@@ -100,15 +105,17 @@ export default function CoursesPage() {
             <Title order={2} mb="xs">
               My Course
             </Title>
-            <Text c="dimmed">
-              Your current learning session
-            </Text>
+            <Text c="dimmed">Your current learning session</Text>
           </Box>
           <Button
             leftSection={<IconPlus size={20} />}
             onClick={() => {
               // Warn user they'll lose current course
-              if (confirm('Creating a new course will replace your current one. Continue?')) {
+              if (
+                confirm(
+                  'Creating a new course will replace your current one. Continue?'
+                )
+              ) {
                 sessionStorage.removeItem('current_course');
                 router.push('/course/new_course');
               }
@@ -141,27 +148,40 @@ export default function CoursesPage() {
                   flexShrink: 0,
                 }}
               >
-                <IconBook size={30} style={{ color: 'var(--mantine-color-blue-6)' }} />
+                <IconBook
+                  size={30}
+                  style={{ color: 'var(--mantine-color-blue-6)' }}
+                />
               </Box>
 
               <Box style={{ flex: 1, minWidth: 0 }}>
-                <Title order={4} mb={4} style={{ 
-                  overflow: 'hidden',
-                  textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap'
-                }}>
+                <Title
+                  order={4}
+                  mb={4}
+                  style={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
                   {course.textbook_name}
                 </Title>
-                
+
                 <Group gap="md">
                   <Group gap="xs">
-                    <IconBook size={16} style={{ color: 'var(--mantine-color-gray-6)' }} />
+                    <IconBook
+                      size={16}
+                      style={{ color: 'var(--mantine-color-gray-6)' }}
+                    />
                     <Text size="sm" c="dimmed">
                       {course.total_lessons} lessons
                     </Text>
                   </Group>
                   <Group gap="xs">
-                    <IconClock size={16} style={{ color: 'var(--mantine-color-gray-6)' }} />
+                    <IconClock
+                      size={16}
+                      style={{ color: 'var(--mantine-color-gray-6)' }}
+                    />
                     <Text size="sm" c="dimmed">
                       Started {new Date(course.created_at).toLocaleDateString()}
                     </Text>
@@ -176,13 +196,13 @@ export default function CoursesPage() {
           </Group>
         </Card>
 
-        {/* Info note */}
+        {/* Info note
         <Paper p="md" radius="md" style={{ background: 'var(--mantine-color-yellow-0)' }}>
           <Text size="sm" c="dimmed">
             <strong>Note:</strong> Your course is stored temporarily in your browser. 
             It will be lost if you close this tab or clear your browser data.
           </Text>
-        </Paper>
+        </Paper> */}
       </Stack>
     </Box>
   );
