@@ -3,11 +3,9 @@ import { auth0 } from "./lib/auth0";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  console.log("Middleware running for:", pathname); // Debug log
 
   // Protected routes: check session
   const session = await auth0.getSession(request);
-  console.log("Session:", session?.user ? "Found" : "Not found"); // Debug log
 
   // Define public URLs
   const publicPaths = ["/", "/auth/login", "/auth/callback"];

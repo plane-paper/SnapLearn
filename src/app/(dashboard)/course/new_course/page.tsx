@@ -11,6 +11,7 @@ import {
   Drawer,
   FileButton,
   Flex,
+  Loader,
   NavLink,
   Paper,
   Stack,
@@ -99,14 +100,52 @@ const topicJson = {
     total_entries: 9,
   },
 };
-export default function Home() {
+
+export default function NewCourse() {
   const { user, isLoading } = useUser();
   const [sideBarStatus, setSideBarStatus] = useState<boolean>(false);
   const [isFileProcessed, setIsFileProcessed] = useState<boolean>(false);
   const [newCourseStep, setNewCourseStep] = useState<0 | 1 | 2 | 3>(0);
   const [lessonTime, setLessonTime] = useState<number>(0);
-
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [topicData, setTopicData] = useState(null);
   const [file, setFile] = useState<File | null>(null);
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload-pdf', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Upload failed');
+      }
+
+      const data = await response.json();
+      console.log('Received data:', data);
+
+      setTopicData(data.topics);
+
+      // Move to next step with the data
+      setNewCourseStep(1);
+    } catch (err) {
+      console.error('Upload error:', err);
+      setError(err instanceof Error ? err.message : 'Upload failed');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <Box
@@ -117,96 +156,6 @@ export default function Home() {
         minHeight: 'fit-content',
       }}
     >
-      {/* Sidebar Toggle */}
-      {/* <ActionIcon
-        onClick={() => setSideBarStatus((o) => !o)}
-        size="xl"
-        variant="subtle"
-        style={{
-          position: 'absolute',
-          top: 16,
-          left: 16,
-          zIndex: 0,
-        }}
-      >
-        <IconLayoutSidebarLeftExpand size={28} />
-      </ActionIcon> */}
-
-      {/* Sidebar Drawer */}
-      {/* <Drawer
-        opened={sideBarStatus}
-        onClose={() => setSideBarStatus(false)}
-        withCloseButton={false}
-        size={280}
-        styles={{
-          content: {
-            background: 'white',
-            boxShadow: '2px 0 12px rgba(0,0,0,0.08)',
-          },
-          body: {
-            padding: 'var(--mantine-spacing-lg)',
-            height: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          },
-          root: { zIndex: 1 },
-        }}
-      >
-        
-        <Box>
-          {isLoading && <Text>Loading...</Text>}
-          {user && (
-            <Box mb="lg">
-              <Flex align="center" gap="md">
-                <Avatar color="blue" radius="xl" size="lg">
-                  {user.name?.[0]}
-                </Avatar>
-                <Box style={{ flex: 1 }}>
-                  <Text fw={600} size="sm">
-                    {user.name?.substring(0, user.name.indexOf('@'))}
-                  </Text>
-                  <Text size="xs" c="dimmed">
-                    {user.email}
-                  </Text>
-                </Box>
-              </Flex>
-            </Box>
-          )}
-
-          <Divider my="md" />
-
-          
-          <Box>
-            {navList.map((item, key) => (
-              <NavLink
-                key={key}
-                href={item.href}
-                label={item.label}
-                leftSection={<IconHome size={18} stroke={1.5} />}
-                rightSection={<IconChevronRight size={14} stroke={1.5} />}
-                styles={{
-                  root: {
-                    borderRadius: 'var(--mantine-radius-md)',
-                    marginBottom: '4px',
-                  },
-                }}
-              />
-            ))}
-          </Box>
-        </Box>
-
-        <Button
-          component="a"
-          href="/auth/logout?returnTo=http://localhost:3000"
-          variant="light"
-          color="red"
-          fullWidth
-        >
-          Log Out
-        </Button>
-      </Drawer> */}
-
       {/* Main Content */}
       {newCourseStep == 0 && (
         <Center style={{ flex: 1, padding: 32 }}>
@@ -227,13 +176,12 @@ export default function Home() {
                   Upload Your Textbook
                 </Title>
                 <Text size="sm" c="dimmed">
-                  Start your learning journey by uploading a PDF or Word
-                  document
+                  Start your learning journey by uploading a PDF document
                 </Text>
               </Box>
 
               {/* Upload Area */}
-              <FileButton onChange={setFile} accept=".pdf,.doc,.docx">
+              <FileButton onChange={setFile} accept=".pdf">
                 {(props) => (
                   <Paper
                     {...props}
@@ -280,17 +228,24 @@ export default function Home() {
               </FileButton>
 
               {/* Action Button */}
-              <Button
-                fullWidth
-                size="lg"
-                disabled={!file}
-                onClick={() => {
-                  console.log('Starting processing...');
-                  setNewCourseStep(1);
-                }}
-              >
-                Start Processing
-              </Button>
+              {file && (
+                <Button
+                  fullWidth
+                  size="lg"
+                  disabled={loading}
+                  mt="md"
+                  onClick={() => {
+                    handleUpload();
+                  }}
+                >
+                  {loading ? <Loader size="sm" /> : 'Process File'}
+                </Button>
+              )}
+              {error && (
+                <Text c="red">
+                  {error}
+                </Text>
+              )}
 
               {/* Helper Text */}
               <Text size="xs" c="dimmed" ta="center">
