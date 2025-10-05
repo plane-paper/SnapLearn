@@ -101,10 +101,10 @@ export default function TableOfTopics(props: TableOfTopicsProps) {
       }
 
       const data = await response.json();
-      console.log('Lesson plan:', data.lesson_list);
+      console.log('Lesson plan:', data);
 
       // Pass the lesson plan to the next step
-      props.setLessonPlan(data.lesson_list); // You'll need to add this prop
+      props.setLessonPlan(data); // You'll need to add this prop
       props.setNewCourseStep(2);
     } catch (err) {
       console.error('Plan creation error:', err);
