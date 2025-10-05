@@ -39,67 +39,67 @@ const navList = [
     label: 'Home',
   },
 ];
-const topicJson = {
-  topics: {
-    entries: [
-      {
-        level: 1,
-        page: 1,
-        time: 42,
-        title: 'Chapter 1: Europe in 1914',
-      },
-      {
-        level: 1,
-        page: 15,
-        time: 36,
-        title: 'Chapter 2: The Coming of War',
-      },
-      {
-        level: 1,
-        page: 27,
-        time: 30,
-        title: 'Chapter 3: 1914: The Opening Campaigns',
-      },
-      {
-        level: 1,
-        page: 37,
-        time: 57,
-        title: 'Chapter 4: 1915: The War Continues',
-      },
-      {
-        level: 1,
-        page: 56,
-        time: 36,
-        title: 'Chapter 5: 1916: The War of Attrition',
-      },
-      {
-        level: 1,
-        page: 68,
-        time: 39,
-        title: 'Chapter 6: The United States Enters the War',
-      },
-      {
-        level: 1,
-        page: 81,
-        time: 42,
-        title: 'Chapter 7: 1917: The Year of Crisis',
-      },
-      {
-        level: 1,
-        page: 95,
-        time: 54,
-        title: 'Chapter 8: 1918: The Year of Decision',
-      },
-      {
-        level: 1,
-        page: 113,
-        time: 33,
-        title: 'Chapter 9: The Settlement',
-      },
-    ],
-    total_entries: 9,
-  },
-};
+// const topicJson = {
+//   topics: {
+//     entries: [
+//       {
+//         level: 1,
+//         page: 1,
+//         time: 42,
+//         title: 'Chapter 1: Europe in 1914',
+//       },
+//       {
+//         level: 1,
+//         page: 15,
+//         time: 36,
+//         title: 'Chapter 2: The Coming of War',
+//       },
+//       {
+//         level: 1,
+//         page: 27,
+//         time: 30,
+//         title: 'Chapter 3: 1914: The Opening Campaigns',
+//       },
+//       {
+//         level: 1,
+//         page: 37,
+//         time: 57,
+//         title: 'Chapter 4: 1915: The War Continues',
+//       },
+//       {
+//         level: 1,
+//         page: 56,
+//         time: 36,
+//         title: 'Chapter 5: 1916: The War of Attrition',
+//       },
+//       {
+//         level: 1,
+//         page: 68,
+//         time: 39,
+//         title: 'Chapter 6: The United States Enters the War',
+//       },
+//       {
+//         level: 1,
+//         page: 81,
+//         time: 42,
+//         title: 'Chapter 7: 1917: The Year of Crisis',
+//       },
+//       {
+//         level: 1,
+//         page: 95,
+//         time: 54,
+//         title: 'Chapter 8: 1918: The Year of Decision',
+//       },
+//       {
+//         level: 1,
+//         page: 113,
+//         time: 33,
+//         title: 'Chapter 9: The Settlement',
+//       },
+//     ],
+//     total_entries: 9,
+//   },
+// };
 
 export default function NewCourse() {
   const { user, isLoading } = useUser();
@@ -109,9 +109,10 @@ export default function NewCourse() {
   const [lessonTime, setLessonTime] = useState<number>(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [topicData, setTopicData] = useState(null);
+  const [topicData, setTopicData] = useState<TopicJson|null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [lessonPlan, setLessonPlan] = useState<LessonPlan>({lesson_list:[]});
+  const [generatedCourse, setGeneratedCourse] = useState(null);
 
   const handleUpload = async () => {
     if (!file) return;
@@ -136,7 +137,7 @@ export default function NewCourse() {
       const data = await response.json();
       console.log('Received data:', data);
 
-      setTopicData(data.topics);
+      setTopicData(data);
 
       // Move to next step with the data
       setNewCourseStep(1);
@@ -268,7 +269,7 @@ export default function NewCourse() {
           h={'fit-content'}
         >
           <TableOfTopics
-            topicJson={topicJson}
+            topicJson={topicData as TopicJson}
             setNewCourseStep={setNewCourseStep}
             leasonTime={lessonTime}
             setLessonTime={setLessonTime}
@@ -289,7 +290,9 @@ export default function NewCourse() {
           <StudyPlan setNewCourseStep={setNewCourseStep} lessonPlan={lessonPlan as LessonPlan}/>
         </Box>
       )}
-      {newCourseStep == 3 && <FinishPage />}
+      {newCourseStep == 3 && <FinishPage lessonPlan={lessonPlan}
+          file={file as File}
+          onCourseGenerated={setGeneratedCourse}/>}
     </Box>
   );
 }

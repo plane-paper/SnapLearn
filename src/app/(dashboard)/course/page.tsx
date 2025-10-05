@@ -9,56 +9,38 @@ import {
   Stack,
   Text,
   Title,
-  Badge,
   Paper,
-  Loader,
 } from '@mantine/core';
-import { IconBook, IconPlus, IconClock, IconCalendar } from '@tabler/icons-react';
+import { IconBook, IconPlus, IconClock } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface Course {
   id: string;
   textbook_name: string;
-  total_sessions: number;
-  total_time: string;
+  total_lessons: number;
   created_at: string;
-  progress?: number;
 }
 
 export default function CoursesPage() {
   const router = useRouter();
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [course, setCourse] = useState<Course | null>(null);
 
   useEffect(() => {
-    fetchCourses();
+    // Check if there's a course in sessionStorage
+    const stored = sessionStorage.getItem('current_course');
+    if (stored) {
+      try {
+        const parsedCourse = JSON.parse(stored);
+        setCourse(parsedCourse);
+      } catch (error) {
+        console.error('Failed to parse stored course:', error);
+      }
+    }
   }, []);
 
-  const fetchCourses = async () => {
-    try {
-      const response = await fetch('/api/courses');
-      if (response.ok) {
-        const data = await response.json();
-        setCourses(data.courses || []);
-      }
-    } catch (error) {
-      console.error('Failed to fetch courses:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
-    return (
-      <Center style={{ flex: 1, minHeight: '100vh' }}>
-        <Loader size="lg" />
-      </Center>
-    );
-  }
-
-  // No courses - show empty state
-  if (courses.length === 0) {
+  // No course - show empty state
+  if (!course) {
     return (
       <Center style={{ flex: 1, minHeight: '100vh', padding: 32 }}>
         <Paper
@@ -108,7 +90,7 @@ export default function CoursesPage() {
     );
   }
 
-  // Has courses - show list
+  // Has course - show it
   return (
     <Box style={{ maxWidth: 1200, width: '100%', margin: '0 auto', padding: 32 }}>
       <Stack gap="xl">
@@ -116,89 +98,91 @@ export default function CoursesPage() {
         <Group justify="space-between">
           <Box>
             <Title order={2} mb="xs">
-              My Courses
+              My Course
             </Title>
             <Text c="dimmed">
-              {courses.length} {courses.length === 1 ? 'course' : 'courses'} in progress
+              Your current learning session
             </Text>
           </Box>
           <Button
             leftSection={<IconPlus size={20} />}
-            onClick={() => router.push('/courses/new_course')}
+            onClick={() => {
+              // Warn user they'll lose current course
+              if (confirm('Creating a new course will replace your current one. Continue?')) {
+                sessionStorage.removeItem('current_course');
+                router.push('/courses/new_course');
+              }
+            }}
           >
             New Course
           </Button>
         </Group>
 
-        {/* Course List */}
-        <Stack gap="md">
-          {courses.map((course) => (
-            <Card
-              key={course.id}
-              shadow="sm"
-              padding="lg"
-              radius="md"
-              withBorder
-              style={{ cursor: 'pointer' }}
-              onClick={() => router.push(`/courses/${course.id}`)}
-            >
-              <Group justify="space-between" wrap="nowrap">
-                <Group gap="md" style={{ flex: 1 }}>
-                  <Box
-                    style={{
-                      width: 60,
-                      height: 60,
-                      borderRadius: 'var(--mantine-radius-md)',
-                      background: 'var(--mantine-color-blue-0)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <IconBook size={30} style={{ color: 'var(--mantine-color-blue-6)' }} />
-                  </Box>
+        {/* Course Card */}
+        <Card
+          shadow="sm"
+          padding="lg"
+          radius="md"
+          withBorder
+          style={{ cursor: 'pointer' }}
+          onClick={() => router.push('/courses/view')}
+        >
+          <Group justify="space-between" wrap="nowrap">
+            <Group gap="md" style={{ flex: 1 }}>
+              <Box
+                style={{
+                  width: 60,
+                  height: 60,
+                  borderRadius: 'var(--mantine-radius-md)',
+                  background: 'var(--mantine-color-blue-0)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                }}
+              >
+                <IconBook size={30} style={{ color: 'var(--mantine-color-blue-6)' }} />
+              </Box>
 
-                  <Box style={{ flex: 1, minWidth: 0 }}>
-                    <Title order={4} mb={4} style={{ 
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap'
-                    }}>
-                      {course.textbook_name}
-                    </Title>
-                    
-                    <Group gap="md">
-                      <Group gap="xs">
-                        <IconCalendar size={16} style={{ color: 'var(--mantine-color-gray-6)' }} />
-                        <Text size="sm" c="dimmed">
-                          {course.total_sessions} sessions
-                        </Text>
-                      </Group>
-                      <Group gap="xs">
-                        <IconClock size={16} style={{ color: 'var(--mantine-color-gray-6)' }} />
-                        <Text size="sm" c="dimmed">
-                          {course.total_time}
-                        </Text>
-                      </Group>
-                    </Group>
-                  </Box>
+              <Box style={{ flex: 1, minWidth: 0 }}>
+                <Title order={4} mb={4} style={{ 
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {course.textbook_name}
+                </Title>
+                
+                <Group gap="md">
+                  <Group gap="xs">
+                    <IconBook size={16} style={{ color: 'var(--mantine-color-gray-6)' }} />
+                    <Text size="sm" c="dimmed">
+                      {course.total_lessons} lessons
+                    </Text>
+                  </Group>
+                  <Group gap="xs">
+                    <IconClock size={16} style={{ color: 'var(--mantine-color-gray-6)' }} />
+                    <Text size="sm" c="dimmed">
+                      Started {new Date(course.created_at).toLocaleDateString()}
+                    </Text>
+                  </Group>
                 </Group>
+              </Box>
+            </Group>
 
-                <Stack gap="xs" align="flex-end">
-                  {course.progress !== undefined && (
-                    <Badge size="lg" variant="light">
-                      {course.progress}% Complete
-                    </Badge>
-                  )}
-                  <Button variant="light" size="sm">
-                    Continue
-                  </Button>
-                </Stack>
-              </Group>
-            </Card>
-          ))}
-        </Stack>
+            <Button variant="light" size="sm">
+              Continue Learning
+            </Button>
+          </Group>
+        </Card>
+
+        {/* Info note */}
+        <Paper p="md" radius="md" style={{ background: 'var(--mantine-color-yellow-0)' }}>
+          <Text size="sm" c="dimmed">
+            <strong>Note:</strong> Your course is stored temporarily in your browser. 
+            It will be lost if you close this tab or clear your browser data.
+          </Text>
+        </Paper>
       </Stack>
     </Box>
   );

@@ -8,16 +8,68 @@ import {
   ThemeIcon,
   getGradient,
   useMantineTheme,
+  Loader,
 } from '@mantine/core';
 import { IconCheck, IconSparkles, IconArrowRight } from '@tabler/icons-react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
-export default function FinishPage() {
+interface Props {
+  lessonPlan: LessonPlan;
+  file: File;
+  onCourseGenerated: (course: any) => void;
+}
+
+export default function FinishPage(props: Props) {
   const router = useRouter();
   const theme = useMantineTheme();
   const [countdown, setCountdown] = useState(5);
   const [autoRedirect, setAutoRedirect] = useState(true);
+  const [generating, setGenerating] = useState(true);
+  const [courseId, setCourseId] = useState<string | null>(null);
+  const [generatedCourse, setGeneratedCourse] = useState<any>(null);
+
+  useEffect(() => {
+    generateCourse();
+  }, []);
+
+  const generateCourse = async () => {
+    try {
+      const response = await fetch('/api/generate-lessons', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lesson_list: props.lessonPlan.lesson_list }),
+      });
+
+      if (!response.ok) throw new Error('Failed to generate');
+
+      const data = await response.json();
+      
+      const course = {
+        id: Date.now().toString(), // Temporary ID
+        textbook_name: props.file.name,
+        lessons: data.lessons || data['lessons:'], // Handle your typo in Flask
+        total_lessons: data.total_lessons,
+        created_at: new Date().toISOString(),
+      };
+
+      setGeneratedCourse(course);
+      props.onCourseGenerated(course); // Pass to parent
+      setGenerating(false);
+
+    } catch (error) {
+      console.error('Generation error:', error);
+      setGenerating(false);
+    }
+  };
+
+  const handleStart = () => {
+    if (generatedCourse) {
+      // Store in sessionStorage for temporary persistence
+      sessionStorage.setItem('current_course', JSON.stringify(generatedCourse));
+      router.push('/course/view');
+    }
+  };
 
   // Auto redirect after 5 seconds
   useEffect(() => {
@@ -49,8 +101,11 @@ export default function FinishPage() {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        minWidth:'100%',
-        background: getGradient({ deg: 137, from: 'blue', to: 'cyan.7' }, theme),
+        minWidth: '100%',
+        background: getGradient(
+          { deg: 137, from: 'blue', to: 'cyan.7' },
+          theme
+        ),
         padding: 32,
       }}
     >
@@ -66,6 +121,12 @@ export default function FinishPage() {
         }}
       >
         <Stack align="center" gap="xl">
+        {generating ? (
+          <>
+            <Loader size={80} />
+            <Title>Generating Your Course...</Title>
+          </>
+        ) : (<>
           {/* Success Icon */}
           <ThemeIcon
             size={120}
@@ -112,7 +173,10 @@ export default function FinishPage() {
             onClick={handleGoToCourses}
             rightSection={<IconArrowRight size={20} />}
             style={{
-              background: getGradient({ deg: 137, from: 'blue', to: 'cyan.7' }, theme),
+              background: getGradient(
+                { deg: 137, from: 'blue', to: 'cyan.7' },
+                theme
+              ),
             }}
           >
             Go to My Courses
@@ -136,6 +200,7 @@ export default function FinishPage() {
               Cancel auto-redirect
             </Button>
           )}
+          </>)}
         </Stack>
 
         <style>{`
