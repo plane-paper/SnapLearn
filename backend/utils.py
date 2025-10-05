@@ -1,5 +1,6 @@
 import networkx as nx
 from typing import Optional
+import psycopg2
 
 def add_topic(graph, name, time: Optional[int] = None, difficulty: Optional[int] = None,
               completed: bool = False):
@@ -23,6 +24,40 @@ def assign_time(entries, minutes_per_page: int = 2):
             end_page = start_page + 10
         num_pages = max(1, end_page - start_page + 1)
         chapter['time'] = num_pages * minutes_per_page
+
+def save_pdf_to_db(filename, pdf_bytes):
+    conn = psycopg2.connect(
+        dbname="postgres",
+        user="postgres",
+        password="ab1cd2ef3",  # use your actual password
+        host="localhost",
+        port=5432
+    )
+    cur = conn.cursor()
+    cur.execute(
+        "INSERT INTO pdf_files (filename, data) VALUES (%s, %s)",
+        (filename, psycopg2.Binary(pdf_bytes))
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+
+def get_pdf_from_db(filename):
+    conn = psycopg2.connect(
+        dbname="postgres",
+        user="postgres",
+        password="ab1cd2ef3",
+        host="localhost",
+        port=5432
+    )
+    cur = conn.cursor()
+    cur.execute("SELECT data FROM pdf_files WHERE filename = %s", (filename,))
+    row = cur.fetchone()
+    cur.close()
+    conn.close()
+    if row:
+        return row[0]  # This is the PDF bytes
+    return None
 
 def remove_trailing_chapters(entries):
     """

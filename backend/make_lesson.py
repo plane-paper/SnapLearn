@@ -63,8 +63,9 @@ def make_lesson_list_from_topics(topics: List[Dict], minutes_per_lesson: int) ->
                     else:
                         # Not enough room, add practice and start new lesson
                         if current_time > 0:
-                            practice = make_practice(minutes_per_lesson - current_time)
-                            current_lesson.append(practice)
+                            if minutes_per_lesson - current_time > 0:
+                                practice = make_practice(minutes_per_lesson - current_time)
+                                current_lesson.append(practice)
                             lessons.append(current_lesson)
                             current_lesson = []
                             current_time = 0
@@ -90,8 +91,9 @@ def make_lesson_list_from_topics(topics: List[Dict], minutes_per_lesson: int) ->
                 # Doesn't fit in current lesson
                 if current_time > 0:
                     # Step 7: Fill remaining time with practice and finalize this lesson
-                    remaining_time = minutes_per_lesson - current_time
-                    practice = make_practice(remaining_time)
+                    if minutes_per_lesson - current_time > 0:
+                        remaining_time = minutes_per_lesson - current_time
+                        practice = make_practice(remaining_time)
                     current_lesson.append(practice)
                     lessons.append(current_lesson)
                     current_lesson = []

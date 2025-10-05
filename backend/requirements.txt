@@ -8,3 +8,4 @@ pypdf
 re
 spacy
 fitz
+psycopg2-binary
