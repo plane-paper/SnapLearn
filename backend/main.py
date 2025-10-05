@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 from read_file import extract_toc
+from priority import create_graph, get_learning_path
 
 app = Flask(__name__)
 
@@ -50,8 +51,14 @@ def plan_lessons():
     data = request.get_json()
     if not data or 'topics' not in data or 'minutes_per_lesson' not in data:
         return "Invalid input", 400
-    topics = data['topics']
+    topics = []
+    for topic in data.topics:
+        topics.append((topic['title'], topic['time'], None))  # Difficulty is None for now
+    G = create_graph(topics)
+    path = get_learning_path(G, False)
+
     minutes_per_lesson = data['minutes_per_lesson']
+    
 
     
     
