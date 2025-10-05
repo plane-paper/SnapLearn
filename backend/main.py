@@ -112,9 +112,11 @@ def generate_lessons():
     """
     Streams lessons as they're generated
     """
+    
     return jsonify({
-        "lessons:": DEMO_LESSONS,
-        "total_lessons": len(DEMO_LESSONS)
+        "lessons": DEMO_LESSONS,
+        "total_lessons": len(DEMO_LESSONS),
+        "completed": 0
     }), 200
     # try:
     #     data = request.get_json()
