@@ -9,7 +9,9 @@ def index():
 
 @app.route("/upload", methods=["POST"])
 def upload_file():
-    
+    """
+    Expect a PDF file upload with key 'file' in form-data.
+    """
     if 'file' not in request.files:
         return "No file part", 400
     file = request.files['file']
@@ -31,6 +33,28 @@ def upload_file():
         
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@app.route("/plan", methods=["POST"])
+def plan_lessons():
+    """
+    Expect JSON body with 'topics' key containing a list of dictionaries (each with 'title' and 'time'), and an estimated time per lesson from the user.
+    Example:
+    {
+        "topics": [
+            {"title": "Chapter 1: Introduction", "time": 20},
+            {"title": "Chapter 2: Overview", "time": 10}
+        ],
+        "minutes_per_lesson": 30
+    }
+    """
+    data = request.get_json()
+    if not data or 'topics' not in data or 'minutes_per_lesson' not in data:
+        return "Invalid input", 400
+    topics = data['topics']
+    minutes_per_lesson = data['minutes_per_lesson']
+
+    
+    
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=8000)

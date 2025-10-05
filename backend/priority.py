@@ -314,10 +314,6 @@ def create_graph(G: nx.DiGraph, topics: List[Tuple[str, int, int]]):
     for name, time_val, difficulty in topics:
         G.add_node(name, time=time_val, difficulty=difficulty, completed=False)
     
-    # Mark some as completed
-    G.nodes["Python Basics"]["completed"] = True
-    G.nodes["Variables and Data Types"]["completed"] = True
-    
     # Auto-detect prerequisites using Gemini
     topic_names = [name for name, _, _ in topics]
     auto_add_dependencies(G, topic_names, mode='batch')
