@@ -43,7 +43,7 @@ export default function HomePage() {
         </Title>
         <Button
             component="a"
-            href="/auth/login?returnTo=http://localhost:3000/home"
+            href="/auth/login?returnTo=http://localhost:3000/course"
             bg="primary.6"
             ff={'heading'}
         >

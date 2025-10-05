@@ -33,12 +33,6 @@ import TableOfTopics from '../../../components/tableOfTopics';
 import StudyPlan from './studyPlan';
 import FinishPage from './finishPage';
 
-const navList = [
-  {
-    href: '/home',
-    label: 'Home',
-  },
-];
 // const topicJson = {
 //   topics: {
 //     entries: [
