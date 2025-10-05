@@ -1,1 +1,0 @@
-- Automatically detects if time estimated for each chapter is too long/short for user and adjusts every chapter
